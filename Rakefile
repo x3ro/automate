@@ -17,11 +17,10 @@ Jeweler::Tasks.new do |gem|
   gem.name = "automate"
   gem.homepage = "http://github.com/x3ro/automate"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{Automate helps you automating all your favorite shell tasks}
+  gem.description = %Q{The automate Gem provides a very simple DSL for writing command line automations, providing nice-to-have features such as error handling so that you don't have to implement it over and over again :)}
   gem.email = "public@x3ro.de"
   gem.authors = ["Lucas Jenß"]
-  # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
 
@@ -30,14 +29,6 @@ Rake::TestTask.new(:test) do |test|
   test.libs << 'lib' << 'test'
   test.pattern = 'test/**/test_*.rb'
   test.verbose = true
-end
-
-require 'rcov/rcovtask'
-Rcov::RcovTask.new do |test|
-  test.libs << 'test'
-  test.pattern = 'test/**/test_*.rb'
-  test.verbose = true
-  test.rcov_opts << '--exclude "gems/*"'
 end
 
 task :default => :test
