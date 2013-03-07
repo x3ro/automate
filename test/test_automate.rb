@@ -112,4 +112,12 @@ class TestAutomate < MiniTest::Unit::TestCase
     assert_equal 43, result[:output]
   end
 
+
+  def test_manually_abort_chain_with_error
+    proc = lambda { error "test" }
+    assert_raises(Automate::ChainLinkFailedError) do
+      Automate::ChainLink.invoke(proc, [])
+    end
+  end
+
 end

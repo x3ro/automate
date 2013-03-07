@@ -67,6 +67,11 @@ module Automate
       end
     end
 
+    # Manually abort a chain because of an error
+    def error(msg)
+      raise CmdFailedError.new(msg)
+    end
+
     # Implement method_missing so that we can address passed variables using the
     # `_variablename` shorthand within a chain link.
     def method_missing(method, *args, &block)
