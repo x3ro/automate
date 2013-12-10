@@ -1,6 +1,7 @@
+require 'simplecov'
+SimpleCov.start
+
 require 'rubygems'
-
-
 require 'bundler'
 begin
   Bundler.setup(:default, :development)
@@ -14,10 +15,6 @@ end
 require 'minitest/unit'
 require "minitest/reporters"
 MiniTest::Reporters.use! MiniTest::Reporters::SpecReporter.new
-
-
-require 'simplecov'
-SimpleCov.start
 
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
