@@ -12,6 +12,10 @@ c = Automate::Chain.which("Serves as an example") do
     run "touch #{_filename}"
   end
 
+  defer "Clean up temporary file" do
+    run "rm #{_filename}"
+  end
+
   go "Write a random number into the file" do
     pass :number, Random.rand(100)
     run "echo #{_number} > #{_filename}"
@@ -19,6 +23,10 @@ c = Automate::Chain.which("Serves as an example") do
 
   go "Demonstrate a failed chain link" do
     run "this_command_doesnt_even_exist #{_number}"
+  end
+
+  defer "Demonstrate defer" do
+    run "echo 'Look ma, defer'"
   end
 
 end
