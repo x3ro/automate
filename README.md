@@ -37,7 +37,7 @@ Here's a very short example which creates a file and writes a random number into
 
 ## Usage
 
-To begin with, `Automate::Chain.which("Description of command chain") creates a new command chain, which is defined by the block passed to it.
+To begin with, `Automate::Chain.which("Description of command chain")` creates a new command chain, which is defined by the block passed to it.
 
 Inside said block, "chain links" are defined using the `go` method. Each chain link should consist of an action which can be described in a few words, thus making the entire chain a series of atomic, or close to atomic operations:
 
@@ -55,6 +55,23 @@ The chain link block defines its behavior, and the following methods are availab
 
   * `run "some shell command"` - Invokes a shell command, returning its result (including everything written to stderr! If you don't want to capture stderr, pass "false" as `run's` second parameter)
 
+One can also create "deferred" chain links. These are executed as soon as all regular commands have been executed, but also if any of them fails:
+
+    go "Create temporary file" do
+      demand :tmpfile
+
+      defer "Delete temporary file" do
+        run "rm #{_tmpfile}"
+      end
+
+      run "touch #{_tmpfile}"
+    end
+
+
+
+## Caveats
+
+* `defer` blocks MUST be defined before any command that might fail. This is a result of the current implementation of `automate`, and might be improved in a future version. Until then, the way is to put any `defer` block right at the start of a command, after any `demand` invocations.
 
 
 
