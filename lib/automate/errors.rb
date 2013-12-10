@@ -1,6 +1,13 @@
 module Automate
 
-  class ChainLinkFailedError < Exception; end
+  class ChainLinkFailedError < Exception
+    attr_reader :defer_list
+    def initialize(defer_list)
+      super
+      @defer_list = defer_list
+    end
+  end
+
   class CmdFailedError < Exception; end
 
   class ChainFailedError < Exception

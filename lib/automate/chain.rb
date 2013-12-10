@@ -7,9 +7,6 @@ module Automate
   class Chain
     include Messenger
 
-    TYPE_COMMAND = 1
-    TYPE_DEFER = 2
-
     # Factory method that creates a new command chain.
     #
     def self.which(task, &block)
@@ -20,12 +17,7 @@ module Automate
 
     # Add a new link to the command chain
     def go(desc, &block)
-      add_command(desc, TYPE_COMMAND, block)
-    end
-
-    # Add a new link to the defer chain
-    def defer(desc, &block)
-      add_command(desc, TYPE_DEFER, block)
+      add_command(desc, block)
     end
 
     # Run _all_ the command chain links. Will abort the command chain if any chain link
@@ -74,8 +66,13 @@ module Automate
 
         error = false
         begin
-          ret, out = ChainLink.invoke(proc, args)
-        rescue ChainFailedError, ChainLinkFailedError => e
+          ret, out, chain_link_defer = ChainLink.invoke(proc, args)
+          @defer_list += chain_link_defer
+        rescue ChainLinkFailedError => e
+          # TODO: Storing the defer_list in the ChainLinkFailedError is awful,
+          # and shall be fixed when there's time to remove this entire exception-based
+          # "communication" between chain and chain link.
+          @defer_list += e.defer_list
           error = true
         end
         raise ChainFailedError.new(index + 1, desc) if ret == false || error == true
@@ -107,19 +104,9 @@ module Automate
       Time.now.strftime('%H:%M:%S.%L')
     end
 
-    def add_command(desc, type, cmd)
+    def add_command(desc, cmd)
       raise "Parameter must be a Proc/Lambda" if !cmd.is_a?(Proc)
-
-      case type
-        when TYPE_COMMAND
-          @cmd_list.push [desc, cmd]
-
-        when TYPE_DEFER
-          @defer_list.push [desc, cmd]
-
-        else
-          raise "Unknown command type given: #{type}"
-      end
+      @cmd_list.push [desc, cmd]
     end
 
 

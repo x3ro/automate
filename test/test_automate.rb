@@ -124,11 +124,11 @@ class TestAutomate < MiniTest::Test
   def test_defer_invocation
     c = Automate::Chain.which("Has a single element + defer") do
       go "Set some variable" do
-        pass :foo, 42
-      end
+        defer "Alter the variable" do
+          pass :foo, 24
+        end
 
-      defer "Alter the variable" do
-        pass :foo, 24
+        pass :foo, 42
       end
     end
     assert_equal({:foo => 24}, c.run)
@@ -138,19 +138,19 @@ class TestAutomate < MiniTest::Test
   def test_defer_invocation_order
     c = Automate::Chain.which("Test chain") do
       go "Set some variable" do
+        defer "Change that variable, this should run last" do
+          pass :foo, 1000
+        end
+
         pass :foo, 42
       end
 
-      defer "Change that variable, this should run last" do
-        pass :foo, 1000
-      end
-
       go "This sets the variable too" do
-        pass :foo, 24
-      end
+        defer "This should have no effect on foo's return" do
+          pass :foo, 9999
+        end
 
-      defer "This should have no effect on foo's return" do
-        pass :foo, 9999
+        pass :foo, 24
       end
     end
     assert_equal({:foo => 1000}, c.run)
@@ -160,15 +160,44 @@ class TestAutomate < MiniTest::Test
   def test_failing_defer_command
     c = Automate::Chain.which("Has an error") do
       go "This works" do
-        run "echo -n 'hi'"
-      end
+        defer "But this doesn't" do
+          run "this_doesnt_even_exist___"
+        end
 
-      defer "But this doesn't" do
-        run "this_doesnt_even_exist___"
+        run "echo -n 'hi'"
       end
     end
 
     assert_equal false, c.run
+  end
+
+
+  def test_dont_execute_defer_for_untouched_chain
+    should_be_invoked = nil
+    should_not_be_invoked = false
+
+    c = Automate::Chain.which("Test chain") do
+      go "Set some variable" do
+        defer "this should run last" do
+          should_be_invoked = true
+        end
+
+        run "this_doesnt_even_exist___"
+      end
+
+      go "Chain that is never executed" do
+        defer "This should have no effect on foo's return" do
+          should_not_be_invoked = true
+          pass :ohnoes, true
+        end
+
+        pass :foo, 42
+      end
+    end
+
+    assert_equal(false, c.run)
+    assert_equal(false, should_not_be_invoked)
+    assert_equal(true, should_be_invoked)
   end
 
 end

@@ -9,11 +9,11 @@ c = Automate::Chain.which("Serves as an example") do
 
   go "Create a file in the working directory" do
     demand :filename
-    run "touch #{_filename}"
-  end
+    defer "Clean up temporary file" do
+      run "rm #{_filename}"
+    end
 
-  defer "Clean up temporary file" do
-    run "rm #{_filename}"
+    run "touch #{_filename}"
   end
 
   go "Write a random number into the file" do
@@ -22,11 +22,11 @@ c = Automate::Chain.which("Serves as an example") do
   end
 
   go "Demonstrate a failed chain link" do
-    run "this_command_doesnt_even_exist #{_number}"
-  end
+    defer "Demonstrate defer" do
+      run "echo 'Look ma, defer'"
+    end
 
-  defer "Demonstrate defer" do
-    run "echo 'Look ma, defer'"
+    run "this_command_doesnt_even_exist #{_number}"
   end
 
 end

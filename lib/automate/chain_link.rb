@@ -20,14 +20,14 @@ module Automate
     #
     def invoke(proc)
       ret = instance_exec(&proc)
-      [ret, @out_args]
+      [ret, @out_args, @defer_list]
 
     rescue UnmetDemandError => e
       fail "Required argument '#{e.demand}', but was not given."
-      raise ChainLinkFailedError.new
+      raise ChainLinkFailedError.new(@defer_list)
     rescue CmdFailedError => e
       fail e.message
-      raise ChainLinkFailedError.new
+      raise ChainLinkFailedError.new(@defer_list)
     end
 
 
@@ -72,6 +72,10 @@ module Automate
       raise CmdFailedError.new(msg)
     end
 
+    def defer(desc, &block)
+      @defer_list.push [desc, block]
+    end
+
     # Implement method_missing so that we can address passed variables using the
     # `_variablename` shorthand within a chain link.
     def method_missing(method, *args, &block)
@@ -103,6 +107,7 @@ module Automate
     def initialize(args)
       @in_args = args
       @out_args = {}
+      @defer_list = []
     end
 
   end
