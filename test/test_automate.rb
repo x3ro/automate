@@ -1,6 +1,6 @@
 require 'helper'
 
-class TestAutomate < MiniTest::Unit::TestCase
+class TestAutomate < MiniTest::Test
 
   def test_single_element_chain
     c = Automate::Chain.which("Has a single element") do

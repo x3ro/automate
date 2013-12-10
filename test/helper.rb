@@ -12,7 +12,7 @@ rescue Bundler::BundlerError => e
 end
 
 
-require 'minitest/unit'
+require 'minitest/autorun'
 require "minitest/reporters"
 MiniTest::Reporters.use! MiniTest::Reporters::SpecReporter.new
 
@@ -22,7 +22,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'automate'
 
 
-class MiniTest::Unit::TestCase
+class MiniTest::Test
   def setup
     @original_stdout = $stdout
     $stdout = StringIO.new
@@ -34,4 +34,4 @@ class MiniTest::Unit::TestCase
 end
 
 
-MiniTest::Unit.autorun
+MiniTest.autorun
