@@ -50,7 +50,7 @@ module Automate
         end
       end
 
-      raise CmdFailedError.new("Command '#{cmd}' had exit status != 0.") if $? != 0
+      raise CmdFailedError.new("Command '#{cmd}' had exit status #{$?.to_i}") if $? != 0
       out
     end
 
