@@ -77,10 +77,16 @@ module Automate
         end
         raise ChainFailedError.new(index + 1, desc) if ret == false || error == true
 
-
         # Pass the arguments from the last iteration, overwriting everything that
         # was passed from the current one.
         args.merge! out
+
+        # Make it possible to run commands step by step
+        if !ENV["AUTOMATE_STEP"].nil?
+          puts "Press a key to continue..."
+          $stdin.gets
+          puts "\n"
+        end
       end
 
       args
