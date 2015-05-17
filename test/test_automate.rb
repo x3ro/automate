@@ -75,15 +75,13 @@ class TestAutomate < MiniTest::Test
   end
 
 
-  def test_method_missing_in_chain_link
-    assert_raises(NameError) do
-      c = Automate::Chain.which("checks method missing") do
-        go "Raise name error" do
-          wobblewobble
-        end
+  def test_exception_in_chain_link
+    c = Automate::Chain.which("checks method missing") do
+      go "Raise name error" do
+        wobblewobble
       end
-      c.run
     end
+    assert_equal false, c.run
   end
 
 
