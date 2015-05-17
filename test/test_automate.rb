@@ -97,6 +97,17 @@ class TestAutomate < MiniTest::Test
     assert_equal "4242", result[:output]
   end
 
+  def test_parameter_passed_through
+    c = Automate::Chain.which("...") do
+      go "..." do
+        demand :input
+      end
+    end
+
+    result = c.run({:input => 42})
+    assert_equal({:input => 42}, result)
+  end
+
 
   def test_access_variables_just_passed
     c = Automate::Chain.which("Run shell command") do
