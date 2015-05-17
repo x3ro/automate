@@ -28,9 +28,10 @@ module Automate
     rescue CmdFailedError => e
       fail e.message
       raise ChainLinkFailedError.new(@defer_list)
+    rescue => e
+      fail "Chain link raised an exception: \n #{e} \n #{e.backtrace.join("\n")}"
+      raise ChainLinkFailedError.new(@defer_list)
     end
-
-
 
     # ==========
     # Public API
