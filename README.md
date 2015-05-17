@@ -52,6 +52,19 @@ One can also create "deferred" chain links. These are executed (in reverse order
     end
 
 
+### Running a command chain
+
+After creation, a chain can be run like so:
+
+    c = Automate::Chain.which("...") do
+      [...]
+    end
+
+    result = c.run({:param1 => 123, :param2 => "foobar"})
+
+The result will be a hash containing all parameters passed to the initial chain or passed by any of the chain links, or `false` in case of an error in the chain.
+
+
 
 ## Other features
 
@@ -70,6 +83,8 @@ One can also create "deferred" chain links. These are executed (in reverse order
 * "Literate automate", e.g. generating a automate-based ruby script from a markdown (or similar) file to properly self-documenting scripts.
 
 * make it possible to write "plugins" that provide pre-defined commands, e.g. "create_file" could automatically run "touch file", check if the file has actually been crated and create a defer for "rm file".
+
+* `run` should not return `false` on error. Perhaps a `:chain_error` element in the hash should be set or something.
 
 
 
