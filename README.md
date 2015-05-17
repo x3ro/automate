@@ -11,27 +11,9 @@ These functionalities will improve as "automate" is being used, so if you see so
 
 
 
-## Example
+## Examples
 
-Here's a very short example which creates a file and writes a random number into it (also to be found in `examples/simple.rb`):
-
-    c = Automate::Chain.which("Serves as an example") do
-
-      go "Create a file in the working directory" do
-        demand :filename
-        run "touch #{_filename}"
-      end
-
-      go "Write a random number into the file" do
-        pass :number, Random.rand(100)
-        run "echo #{_number} > #{_filename}"
-      end
-
-      go "Demonstrate a failed chain link" do
-        run "this_command_doesnt_even_exist #{_number}"
-      end
-
-    end
+Some simple examples can be found in the `examples/` directory.
 
 
 
@@ -39,7 +21,7 @@ Here's a very short example which creates a file and writes a random number into
 
 To begin with, `Automate::Chain.which("Description of command chain")` creates a new command chain, which is defined by the block passed to it.
 
-Inside said block, "chain links" are defined using the `go` method. Each chain link should consist of an action which can be described in a few words, thus making the entire chain a series of atomic, or close to atomic operations:
+Inside said block, "chain links" are defined using the `go` method. Each chain link should consist of an action which can be described in a few words, thus making the entire chain a series of small operations:
 
     # good
     go "Clone the git repository"
@@ -47,15 +29,17 @@ Inside said block, "chain links" are defined using the `go` method. Each chain l
     # bad
     go "Download, compile and install the linux kernel"
 
-The chain link block defines its behavior, and the following methods are available within:
+The chain link block defines its behavior, and the following methods are available within (and should be used in this order):
 
   * `demand :parameter1, :parameter2` - Demand one or more parameters from the previous chain link (or if there is none, from the initial run command).
 
-  * `pass :parameter, value` - Pass a parameter to the next chain link.
+  * `pass :parameter, <value>` - Pass a parameter to the next chain link.
+
+  * `error <msg>` - Abort the chain with the specified error message.
 
   * `run "some shell command"` - Invokes a shell command, returning its result (including everything written to stderr! If you don't want to capture stderr, pass "false" as `run's` second parameter)
 
-One can also create "deferred" chain links. These are executed as soon as all regular commands have been executed, but also if any of them fails:
+One can also create "deferred" chain links. These are executed (in reverse order) as soon as all regular commands have been executed, but also if any of them fails:
 
     go "Create temporary file" do
       demand :tmpfile
@@ -69,16 +53,23 @@ One can also create "deferred" chain links. These are executed as soon as all re
 
 
 
+## Other features
+
+* You can step through all chain links by setting the `AUTOMATE_STEP` environment variable
+
+
+
 ## Caveats
 
 * `defer` blocks MUST be defined before any command that might fail. This is a result of the current implementation of `automate`, and might be improved in a future version. Until then, the way is to put any `defer` block right at the start of a command, after any `demand` invocations.
 
 
 
-## Future features
+## Feature ideas
 
-* Stepping through the script, i.e. execute link by link (especially useful for debugging)
-* Add roll back actions for a link, which are only executed if said link fails.
+* "Literate automate", e.g. generating a automate-based ruby script from a markdown (or similar) file to properly self-documenting scripts.
+
+* make it possible to write "plugins" that provide pre-defined commands, e.g. "create_file" could automatically run "touch file", check if the file has actually been crated and create a defer for "rm file".
 
 
 
