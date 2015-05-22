@@ -1,5 +1,7 @@
 # automate
 
+[![Gem Version](https://badge.fury.io/rb/automate.svg)](http://badge.fury.io/rb/automate)
+
 Automate is a Gem which intends to make writing shell-level automations easier by providing functionality such as:
 
 1. Shell command error handling
