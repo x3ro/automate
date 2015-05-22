@@ -11,4 +11,4 @@ group :development do
   gem "psych"
 end
 
-gem "rainbow"
+gem "rainbow", "~> 2.0.0"

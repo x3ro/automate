@@ -1,3 +1,5 @@
+require 'rainbow/ext/string'
+
 module Automate
 
   module Messenger
